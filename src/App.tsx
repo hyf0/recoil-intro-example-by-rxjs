@@ -31,23 +31,21 @@ const useBehaviorSubjectSetter = <T extends any>(
 const useBehaviorSubject = <T extends any>(
   behaviorSubject: BehaviorSubject<T>
 ) => {
-  const [value, setValue] = useState<T>(behaviorSubject.value);
-  useEffect(() => {
-    const sub = behaviorSubject.subscribe((value) => setValue(value));
-    return () => sub.unsubscribe();
-  }, [behaviorSubject]);
   return [
     useBehaviorSubjectGetter(behaviorSubject),
     useBehaviorSubjectSetter(behaviorSubject),
   ] as const;
 };
 
+// atom
 const todoListState = new BehaviorSubject<TodoItem[]>([]);
 
+// atom
 const todoListFilterState = new BehaviorSubject<
   "Show All" | "Show Completed" | "Show Uncompleted"
 >("Show All");
 
+// selector
 const _filteredTodoListState = combineLatest([
   todoListFilterState,
   todoListState,
@@ -67,6 +65,7 @@ const _filteredTodoListState = combineLatest([
 const filteredTodoListState = new BehaviorSubject<TodoItem[]>([]);
 _filteredTodoListState.subscribe((ls) => filteredTodoListState.next(ls));
 
+// selector
 const _todoListStatsState = todoListState.pipe(
   map(todoList => {
     const totalNum = todoList.length;
